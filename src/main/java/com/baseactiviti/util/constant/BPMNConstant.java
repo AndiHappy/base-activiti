@@ -1,11 +1,15 @@
 package com.baseactiviti.util.constant;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.converter.util.InputStreamProvider;
-import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.engine.impl.util.io.InputStreamSource;
 import org.activiti.engine.impl.util.io.StringStreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.baseactiviti.util.exception.BaseActivitiException;
 
@@ -28,16 +32,38 @@ public class BPMNConstant {
     return false;
   }
 
-  public static boolean validate(String workFlowDefinitionText) throws BaseActivitiException {
+  /**
+   * 校验流程定义
+   * 
+   * @param workFlowResourse
+   *          流程定义的资源（String类型，InputStream流类型,MultipartFile类型）
+   */
+  public static boolean validate(Object workFlowResourse) throws BaseActivitiException {
+    InputStreamProvider inputStreamProvider = null;
     try {
+      if (workFlowResourse instanceof String) {
+        inputStreamProvider = new StringStreamSource((String) workFlowResourse);
+      } else if (workFlowResourse instanceof InputStream) {
+        inputStreamProvider = new InputStreamSource((InputStream) workFlowResourse);
+      } else if (workFlowResourse instanceof MultipartFile) {
+        InputStream inputStream = ((MultipartFile) workFlowResourse).getInputStream();
+        inputStreamProvider = new InputStreamSource(inputStream);
+      } else {
+        throw BaseActivitiException.Validate_UnSupport_Type_Resource;
+      }
       BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
-      InputStreamProvider inputStreamProvider = new StringStreamSource(workFlowDefinitionText);
       bpmnXMLConverter.convertToBpmnModel(inputStreamProvider, true, true);
       return true;
     } catch (Throwable e) {
       log.error("parse bpmn file error:{}", e);
-      throw BaseActivitiException.WFDefinitionValidateError;
+      throw BaseActivitiException.WFDefinition_Validate_Error;
+    } finally {
+      if (inputStreamProvider instanceof InputStreamSource) {
+        try {
+          inputStreamProvider.getInputStream().close();
+        } catch (IOException e) {
+        }
+      }
     }
   }
-
 }

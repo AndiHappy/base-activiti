@@ -4,12 +4,10 @@
 <%@ taglib prefix='fmt' uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="path" value="${pageContext.request.contextPath}"/>
 <jsp:include page="head.jsp"></jsp:include>
-
+<meta name="viewport" content="width=device-width, initial-scale=1,width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <div class="container">
-
     <div class="row">
-    
-     <div class="col-lg-2">
+     <div class="col-md-2">
      	 <div class="panel panel-primary">
      	  <div class="panel-heading">上传流程定义</div>
 		  <div class="panel-body">
@@ -47,10 +45,9 @@
 		  </div>
 		 </div>
      </div>
-     
-     <div class="col-lg-10">
+     <div class="col-md-9">
 	     <div id="uploadpi">
-	         <form action="${path}/simple/deploy" method="post" enctype="multipart/form-data" class="form-inline">
+	         <form action="${path}/baseactiviti/deploy" method="post" enctype="multipart/form-data" class="form-inline">
 	             <div class="fileinput fileinput-new" data-provides="fileinput">
 				  <div class="input-group">
 				    <div class="form-control span3" data-trigger="fileinput"><i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div>
@@ -252,9 +249,6 @@
 	             </tbody>
 	         </table>
 	     </div>
-     
-     </div>
-	
 	</div>
 </div>    
 <jsp:include page="foot.jsp"></jsp:include>

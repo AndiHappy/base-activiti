@@ -1,10 +1,10 @@
 <%@ page language="java"  pageEncoding="UTF-8" contentType="text/html; charset=utf-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="path" value="${pageContext.request.contextPath}"/>
 <jsp:include page="head.jsp"></jsp:include>
 <div class="wrap">
     <div class="container">
-       <form class="form-signin" role="form" action="${path}/simple/checkLogin" method="post">
+       <form class="form-signin" role="form" action="${path}/baseactiviti/checkLogin" method="post">
       	  <h2 class="form-signin-heading text-center">用户登录</h2>
 	      <input type="text" class="form-control input-lg" id="userName" name="userName" placeholder="用户名" >
 	      <input type="password" class="form-control input-lg" id="passWord" name="passWord" placeholder="密   码">

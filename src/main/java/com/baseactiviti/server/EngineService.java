@@ -1,5 +1,8 @@
 package com.baseactiviti.server;
 
+import java.io.InputStream;
+import java.util.List;
+
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
@@ -43,6 +46,9 @@ public class EngineService {
   @Autowired
   protected FormService formService;
 
+  @Autowired
+  private EngineFindServer engineFindServer;
+
   /**
    * 部署流程定义
    * 
@@ -83,4 +89,33 @@ public class EngineService {
     }
     return null;
   }
+
+  /**
+   * 部署流程
+   * 
+   * @param proDefName
+   *          流程名称
+   * @param resourceName
+   *          流程定义对应的资源名称（按照bpmn20.xml或者 bpmn结尾）
+   * @param newinputStream
+   *          流
+   * @param orgId
+   *          企业标识
+   * @throws BaseActivitiException
+   */
+  public ProcessDefinition deploy(String proDefName, String resourceName,
+      InputStream newinputStream, String orgId) throws BaseActivitiException {
+    // 校验流程定义文件
+    boolean value = BPMNConstant.validate(newinputStream);
+    if (value) {
+      Deployment de = repositoryService.createDeployment().addInputStream(resourceName,
+          newinputStream).name(proDefName).tenantId(orgId).deploy();
+      // 检验部署是够成功
+      ProcessDefinition prodef = repositoryService.createProcessDefinitionQuery().deploymentId(de
+          .getId()).singleResult();
+      return prodef;
+    }
+    return null;
+  }
+
 }

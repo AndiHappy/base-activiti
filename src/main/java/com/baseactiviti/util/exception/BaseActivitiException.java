@@ -13,8 +13,11 @@ public class BaseActivitiException extends Exception {
 
   public static final BaseActivitiException ParaError = new BaseActivitiException(10001,
       "参数缺失或者不正确");
-  public static final BaseActivitiException WFDefinitionValidateError = new BaseActivitiException(
+  public static final BaseActivitiException WFDefinition_Validate_Error = new BaseActivitiException(
       10002, "流程定义文件校验错误");
+
+  public static final BaseActivitiException Validate_UnSupport_Type_Resource = new BaseActivitiException(
+      10003, "流程定义文件类型不支持");
 
   public int getCode() {
     return code;

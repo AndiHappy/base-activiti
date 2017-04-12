@@ -11,16 +11,13 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
 		http://gzq.chanjet.com/cms/schema/thrift http://gzq.chanjet.com/cms/schema/thrift/thrift.xsd">
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-		<property name="url" value="jdbc:mysql://localhost:3306/activiti" />
-		<property name="username" value="root" />
-		<property name="password" value="" />
-		<property name="defaultAutoCommit" value="false" />
+	<!-- 数据库设置 -->
+	<bean id="dataSource" class="com.baseactiviti.dao.ActivitiBasicDataSource">
 	</bean>
 	
 	<!-- 自定义的服务 -->
 	<bean id="resumeService" class="com.baseactiviti.custom.server.ResumeService" />
+	<bean id="userServive" class="com.baseactiviti.custom.server.UserService"></bean>
 
 	<!-- 引擎内部提供的UUID生成器，依赖fastxml的java-uuid-generator模块 -->
 	<bean id="uuidGenerator"
