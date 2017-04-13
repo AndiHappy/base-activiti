@@ -1,7 +1,9 @@
 package com.baseactiviti.controller;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +19,8 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.IdentityServiceImpl;
+import org.activiti.engine.impl.persistence.entity.UserEntity;
+import org.activiti.engine.impl.util.IoUtil;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.activiti.spring.ProcessEngineFactoryBean;
@@ -103,9 +107,11 @@ public class WebController {
       session.setAttribute("user", value);
       return "redirect:/baseactiviti/index";
     } else {
-      LogCommand log2 = new LogCommand();
-      ((IdentityServiceImpl) identityService).getCommandExecutor().execute(log2);
-      return "redirect:/baseactiviti/login";
+      // LogCommand log2 = new LogCommand();
+      // ((IdentityServiceImpl)
+      // identityService).getCommandExecutor().execute(log2);
+      session.setAttribute("msg", "用户不存在");
+      return null;
     }
   }
 
@@ -122,23 +128,81 @@ public class WebController {
       User user = request.getSession(true).getAttribute("user") == null ? null
           : (User) request.getSession(true).getAttribute("user");
       if (null == user) {
-        return "redirect:/simple/login";
+        return "redirect:/baseactiviti/login";
       }
       model.addAttribute("user", user);
-      orgId = user.getLastName();
+      orgId = ((UserEntity) user).getRevision() + "";
       if (StringUtils.isBlank(orgId)) {
         model.addAttribute("error", "orgId is null");
         return "/simple/error";
       }
-
-      InputStream inputStream = file.getInputStream();
-      ProcessDefinition definiton = engineService.deploy(proDefName, resourceName, inputStream,
-          orgId);
+      ProcessDefinition definiton = engineService.deploy(proDefName, resourceName, file, orgId);
       model.addAttribute("definiton", definiton);
     } catch (Exception e) {
-      logger.error("流程部署出现错误，请检查流程文件");
+      logger.error("流程部署出现错误，请检查流程文件:{}", e);
       return dealError(model, e.getMessage());
     }
+    return "redirect:/baseactiviti/index";
+  }
+
+  /**
+   * 删除流程
+   */
+  @RequestMapping(value = "/remove")
+  public String remove(HttpServletRequest request, @RequestParam("deployId") String deployId) {
+    repositoryService.deleteDeployment(deployId);
+    return "redirect:/baseactiviti/index";
+  }
+
+  /**
+   * 查看流程定义
+   */
+  @RequestMapping(value = "/viewprocessDef")
+  public void viewprocessDef(HttpServletRequest request, HttpServletResponse response,
+      @RequestParam("processDefId") String processDefId) throws Exception {
+    // 根据流程定义id查询流程定义
+    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+        .processDefinitionId(processDefId).singleResult();
+    InputStream inputStream = repositoryService.getResourceAsStream(processDefinition
+        .getDeploymentId(), processDefinition.getResourceName());
+    response.getOutputStream().write(IoUtil.readInputStream(inputStream, "processDefInputStream"));
+  }
+
+  /**
+   * 查看流程定义图
+   */
+  @RequestMapping(value = "/viewprocessDefImage")
+  public void viewprocessDefImage(HttpServletRequest request, HttpServletResponse response,
+      @RequestParam("processDefId") String processDefId) throws Exception {
+    // 根据流程定义id查询流程定义
+    ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+        .processDefinitionId(processDefId).singleResult();
+    InputStream inputStream = repositoryService.getResourceAsStream(processDefinition
+        .getDeploymentId(), processDefinition.getDiagramResourceName());
+    response.getOutputStream().write(IoUtil.readInputStream(inputStream, "processDefInputStream"));
+  }
+
+  /**
+   * 启动流程实例==》启动流程
+   * "${path}/baseactiviti/start?processDefId=${pd.id}&userId=${user.id}&orgId=${user.lastName}&resId=${user.id}"
+   * 
+   * @return
+   */
+  @RequestMapping(value = "/start")
+  public String startProcessDefinition(HttpServletRequest request,
+      @RequestParam("processDefId") String processDefId, @RequestParam("orgId") String orgId,
+      @RequestParam("resId") String resId, @RequestParam("userId") String userId) {
+    Map<String, Object> map = new HashMap<String, Object>();
+    resId = resId + Math.random();
+    if (processDefId.startsWith("simpleflow")) {
+      map.put("day", 4);
+      map.put("type", "事假");
+      map.put("reason", "世界那么大，我想出去瞅瞅！");
+    }
+    ProcessDefinition prodef = repositoryService.createProcessDefinitionQuery()
+        .processDefinitionTenantId(orgId).processDefinitionId(processDefId).singleResult();
+    System.out.println(prodef);
+    runtimeService.startProcessInstanceByKeyAndTenantId(processDefId, resId, map, orgId);
     return "redirect:/simple/index";
   }
 
@@ -154,10 +218,10 @@ public class WebController {
         : (User) request.getSession(true).getAttribute("user");
 
     if (null == user) {
-      return "redirect:/simple/login";
+      return "redirect:/baseactiviti/login";
     } else {
       model.addAttribute("user", user);
-      String orgId = user.getLastName();
+      String orgId = ((UserEntity) user).getRevision() + "";
       if (StringUtils.isBlank(orgId)) {
         String msg = "orgId is null";
         return dealError(model, msg);

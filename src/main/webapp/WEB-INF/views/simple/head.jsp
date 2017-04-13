@@ -128,11 +128,11 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
           	<c:if test="${empty user.id}">
-          		<li><a href="${path}/simple/login">登录 <span class="glyphicon glyphicon-log-in"></span></a></li>
+          		<li><a href="${path}/baseactiviti/login">登录 <span class="glyphicon glyphicon-log-in"></span></a></li>
           	</c:if>
             <c:if test="${!empty user.id}">
             	<li><a href="#">所在的企业: ${user.lastName} ,${user.firstName} <span class="glyphicon glyphicon-user"></span></a></li>
-          		<li><a href="${path}/simple/login">注销 <span class="glyphicon glyphicon glyphicon-off"></span></a></li>
+          		<li><a href="${path}/baseactiviti/login">注销 <span class="glyphicon glyphicon glyphicon-off"></span></a></li>
             	<li><a href="#">退出 <span class="glyphicon glyphicon-log-out"></span></a></li>
           	</c:if>
           </ul>

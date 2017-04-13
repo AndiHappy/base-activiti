@@ -1,14 +1,19 @@
 package com.baseactiviti.server;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.activiti.bpmn.converter.BpmnXMLConverter;
+import org.activiti.bpmn.converter.util.InputStreamProvider;
+import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.util.io.InputStreamSource;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.spring.ProcessEngineFactoryBean;
@@ -17,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.baseactiviti.util.constant.BPMNConstant;
 import com.baseactiviti.util.exception.BaseActivitiException;
@@ -97,25 +103,18 @@ public class EngineService {
    *          流程名称
    * @param resourceName
    *          流程定义对应的资源名称（按照bpmn20.xml或者 bpmn结尾）
-   * @param newinputStream
+   * @param file
    *          流
    * @param orgId
    *          企业标识
    * @throws BaseActivitiException
+   * @throws IOException
    */
-  public ProcessDefinition deploy(String proDefName, String resourceName,
-      InputStream newinputStream, String orgId) throws BaseActivitiException {
+  public ProcessDefinition deploy(String proDefName, String resourceName, MultipartFile file,
+      String orgId) throws BaseActivitiException, IOException {
+    String workFlowDefinitionText = new String(file.getBytes(), "UTF-8");
     // 校验流程定义文件
-    boolean value = BPMNConstant.validate(newinputStream);
-    if (value) {
-      Deployment de = repositoryService.createDeployment().addInputStream(resourceName,
-          newinputStream).name(proDefName).tenantId(orgId).deploy();
-      // 检验部署是够成功
-      ProcessDefinition prodef = repositoryService.createProcessDefinitionQuery().deploymentId(de
-          .getId()).singleResult();
-      return prodef;
-    }
-    return null;
+    return deployWorkFlow(null, orgId, workFlowDefinitionText, proDefName, resourceName);
   }
 
 }

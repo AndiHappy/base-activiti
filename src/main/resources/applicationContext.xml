@@ -32,8 +32,8 @@
 		<property name="asyncExecutorActivate" value="false" />
 		<property name="mailServerHost" value="mail.my-corp.com" />
 		<property name="mailServerPort" value="5025" />
-		<!-- 流程定义的缓存 -->
-		<!-- <property name="processDefinitionCacheLimit" value="0" /> -->
+		<property name="activityFontName" value="宋体"></property>
+		<property name="labelFontName" value="宋体"></property>
 	</bean>
 
 	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">

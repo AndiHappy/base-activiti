@@ -63,7 +63,7 @@
 	     <!-- 流程列表-->
 	     <div id="pilist">
 	        <table class="table table-bordered table-hover">
-	            <caption><h3><strong>流程定义</strong></h3></caption>
+	            <caption><strong>流程定义</strong></caption>
 	            <thead>
 	            <tr>
 	                <th>流程ID</th>
@@ -77,22 +77,48 @@
 	                <tr>
 	                    <td>${pd.id}</td>
 	                    <td>${pd.name}</td>
-	
 	                    <td>${pd.version}</td>
 	                    <td>
-	                    	<a href="${path}/simple/start?processDefId=${pd.id}&userId=${user.id}">启动流程</a>
+	                    	<a href="${path}/baseactiviti/start?processDefId=${pd.id}&userId=${user.id}&orgId=${user.revision}&resId=${user.id}">启动流程</a>
 	                    	&nbsp;|&nbsp;
-	                        <a href="${path}/simple/viewprocessDef?processDefId=${pd.id}" target="_blank">查看流程定义</a>
+	                        <a href="${path}/baseactiviti/viewprocessDef?processDefId=${pd.id}" target="_blank">查看流程定义</a>
 	                        &nbsp;|&nbsp;
-	                        <a href="javascript:showModle('请假流程图','${path}/simple/viewprocessDefImage?processDefId=${pd.id}');">查看流程图</a>                       
+	                        <a href="javascript:showWin(800,600,'${path}/baseactiviti/viewprocessDefImage?processDefId=${pd.id}'
+	                        ,'tag');">流程图</a>                   
 	                        &nbsp;|&nbsp;
-	                        <a href="${path}/simple/remove?processDefId=${pd.deploymentId}">删除</a>
+	                        <a href="${path}/baseactiviti/remove?deployId=${pd.deploymentId}">删除</a>
 	                    </td>
 	                </tr>
 	            </c:forEach>
 	            </tbody>
 	        </table>
 	     </div>
+	     
+	     <script type="text/javascript">
+	     
+	   //w:宽，h:高，url：地址，tag：标记 
+	     function showWin(w, h, url, tag) { 
+	     var t = (screen.height - h) / 2; //离顶部距离 
+	     var l = (screen.width - w) / 2; //离左边距离 
+	     window.open(url, tag, "width=" + w + ",height=" + h + ",top=" + t + ",left=" + l + ",location=0"); 
+	     } 
+	     
+	   //路径地址，window对象，宽，高 
+	     function open_Dialog(url, win,Width, Height) { 
+	     var return_Value; 
+	     var iTop2 = (window.screen.availHeight - 20 - Height) / 2; 
+	     var iLeft2 = (window.screen.availWidth - 10 - Width) / 2; 
+	     var height2 = Height - 50; 
+	     if (document.all && window.print) { 
+	     return_Value = window.showModalDialog(url, win, "dialogLeft:" + iLeft2 + "px;dialogTop:" + iTop2 + "px;dialogWidth:" + 
+	     Width + "px;dialogHeight:" + Height + "px;center:yes;status:no;scroll:no;help:no;"); 
+	     } 
+	     else { 
+	     window.open(url, win, "top=" + iTop2 + ",left=" + iLeft2 + ",width=" + Width + "px,height=" + height2 + 
+	     "px,resizable=0,scrollbars=0,location=0"); 
+	     } 
+	     }
+</script>
 		
 		<!-- Modal -->
 		<div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
@@ -130,7 +156,7 @@
 	                 <tr>
 	                     <td>${task.id}</td>
 	                     <td>${task.name}</td>
-	                     <td><a href="${path}/simple/claim/${task.id}?userId=${user.id}">认领</a></td>
+	                     <td><a href="${path}/baseactiviti/claim/${task.id}?userId=${user.id}">认领</a></td>
 	                 </tr>
 	             </c:forEach>
 	             </tbody>
@@ -164,7 +190,7 @@
 	                         <td>${task.tenantId } </td>
 	                         <td>${task.name}</td>
 	                         <td>${task.processInstanceId}</td>
-	                         <td><a href="${path}/simple/form?taskId=${task.id}">执行</a></td>
+	                         <td><a href="${path}/baseactiviti/form?taskId=${task.id}">执行</a></td>
 	                     </tr>
 	                 </c:forEach>
 	                 </tbody>
@@ -191,7 +217,7 @@
 	                     <td>${task.id}</td>
 	                     <td>${task.name}</td>
 	                     <td><c:out value="${task.assignee}" default="未认领"/></td>
-	                     <td><a href="${path}/simple/view?executionId=${task.executionId}" target="_blank">流程图</a></td>
+	                     <td><a href="${path}/baseactiviti/view?executionId=${task.executionId}" target="_blank">流程图</a></td>
 	                 </tr>
 	             </c:forEach>
 	             </tbody>
@@ -251,4 +277,5 @@
 	     </div>
 	</div>
 </div>    
+</div>
 <jsp:include page="foot.jsp"></jsp:include>
