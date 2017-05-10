@@ -1,19 +1,13 @@
 package com.baseactiviti.server;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
-import org.activiti.bpmn.converter.BpmnXMLConverter;
-import org.activiti.bpmn.converter.util.InputStreamProvider;
-import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.util.io.InputStreamSource;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.spring.ProcessEngineFactoryBean;
@@ -86,9 +80,7 @@ public class EngineService {
     if (value) {
       Deployment de = repositoryService.createDeployment().tenantId(orgId).name(prodefName)
           .addString(resourceName, workFlowDefinitionText).deploy();
-      /**
-       * 检验部署是够成功
-       */
+      // 检验部署是够成功
       ProcessDefinition prodef = repositoryService.createProcessDefinitionQuery().deploymentId(de
           .getId()).singleResult();
       return prodef;

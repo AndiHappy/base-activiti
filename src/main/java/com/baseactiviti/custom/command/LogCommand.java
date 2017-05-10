@@ -11,7 +11,6 @@ public class LogCommand implements Command<UserQuery>, Serializable {
 
   private static final long serialVersionUID = 3501641497452997071L;
 
-  @Override
   public UserQuery execute(CommandContext commandContext) {
     System.out.println(commandContext);
     DbSqlSession dbo = commandContext.getDbSqlSession();

@@ -26,10 +26,6 @@ public class ActivitiBasicDataSource extends org.apache.commons.dbcp.BasicDataSo
   private long timeBetweenEvictionRunsMillis = 30000L;//
   private long minEvictableIdleTimeMillis = 1800000L;//
 
-  /**
-   * 构造函数中添加 数据库的配置
-   * TODO 改为zk配置的形式的获取
-   */
   public ActivitiBasicDataSource() {
     ini();
   }

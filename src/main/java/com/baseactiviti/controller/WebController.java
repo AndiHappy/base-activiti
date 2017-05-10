@@ -22,6 +22,7 @@ import org.activiti.engine.impl.IdentityServiceImpl;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
 import org.activiti.engine.impl.util.IoUtil;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.apache.commons.lang3.StringUtils;
@@ -189,9 +190,9 @@ public class WebController {
    * @return
    */
   @RequestMapping(value = "/start")
-  public String startProcessDefinition(HttpServletRequest request,
-      @RequestParam("processDefId") String processDefId, @RequestParam("orgId") String orgId,
-      @RequestParam("resId") String resId, @RequestParam("userId") String userId) {
+  public String startProcessDefinition(HttpServletRequest request, HttpServletResponse response,
+      Model model, @RequestParam("processDefId") String processDefId,
+      @RequestParam("orgId") String orgId, @RequestParam("resId") String resId) {
     Map<String, Object> map = new HashMap<String, Object>();
     resId = resId + Math.random();
     if (processDefId.startsWith("simpleflow")) {
@@ -201,8 +202,11 @@ public class WebController {
     }
     ProcessDefinition prodef = repositoryService.createProcessDefinitionQuery()
         .processDefinitionTenantId(orgId).processDefinitionId(processDefId).singleResult();
-    System.out.println(prodef);
-    runtimeService.startProcessInstanceByKeyAndTenantId(processDefId, resId, map, orgId);
+    if (prodef != null) {
+      ProcessInstance instance = runtimeService.startProcessInstanceById(prodef.getId(), resId,
+          map);
+      model.addAttribute("proIns", instance);
+    }
     return "redirect:/simple/index";
   }
 
